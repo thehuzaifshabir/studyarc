@@ -4,13 +4,13 @@ import { Button } from '../../components/ui/Button';
 import { db } from '../../lib/firebase';
 import { doc, updateDoc, collection, getDocs, query, where, addDoc } from 'firebase/firestore';
 import { useAuthStore } from '../../lib/store';
-import { Database, ShieldAlert, LayoutDashboard, Settings, Megaphone, FileText, LayoutGrid } from 'lucide-react';
+import { Database, ShieldAlert, LayoutDashboard, Settings, Megaphone, FileText, LayoutGrid, ClipboardList, Plus, Trash2 } from 'lucide-react';
 import { TargetAudienceSelector } from '../../components/TargetAudienceSelector';
-import { MockTest } from '../../types';
+import { MockTest, Question } from '../../types';
 import { cn } from '../../lib/utils';
 
 export function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<'settings' | 'announcements' | 'notes' | 'apps'>('settings');
+  const [activeTab, setActiveTab] = useState<'settings' | 'announcements' | 'notes' | 'apps' | 'tests'>('settings');
   const [isSeeding, setIsSeeding] = useState(false);
   const { user } = useAuthStore();
   
@@ -35,6 +35,19 @@ export function AdminDashboard() {
   const [appLogo, setAppLogo] = useState('');
   const [appLink, setAppLink] = useState('');
   const [isSubmittingApp, setIsSubmittingApp] = useState(false);
+
+  // Tests State
+  const [selectedCategoriesTest, setSelectedCategoriesTest] = useState<string[]>(['all']);
+  const [testTitle, setTestTitle] = useState('');
+  const [testDesc, setTestDesc] = useState('');
+  const [testDuration, setTestDuration] = useState(60);
+  const [testPrice, setTestPrice] = useState(0);
+  const [testIsFree, setTestIsFree] = useState(true);
+  const [testIsPremiumFeatured, setTestIsPremiumFeatured] = useState(false);
+  const [testQuestions, setTestQuestions] = useState<Partial<Question>[]>([
+    { id: '1', text: '', options: ['', '', '', ''], correctOptionIndex: 0, marks: 4, negativeMarks: 1 }
+  ]);
+  const [isSubmittingTest, setIsSubmittingTest] = useState(false);
 
   // Featured Test State
   const [mockTests, setMockTests] = useState<MockTest[]>([]);
@@ -167,6 +180,89 @@ export function AdminDashboard() {
     }
   };
 
+  const addTestQuestion = () => {
+    setTestQuestions([...testQuestions, {
+      id: Date.now().toString(),
+      text: '',
+      options: ['', '', '', ''],
+      correctOptionIndex: 0,
+      marks: 4,
+      negativeMarks: 1
+    }]);
+  };
+
+  const removeTestQuestion = (index: number) => {
+    if (testQuestions.length <= 1) return;
+    const newQs = [...testQuestions];
+    newQs.splice(index, 1);
+    setTestQuestions(newQs);
+  };
+
+  const updateTestQuestion = (index: number, field: keyof Question, value: any) => {
+    const newQs = [...testQuestions];
+    newQs[index] = { ...newQs[index], [field]: value };
+    setTestQuestions(newQs);
+  };
+
+  const updateTestOption = (qIndex: number, optIndex: number, value: string) => {
+    const newQs = [...testQuestions];
+    const options = [...(newQs[qIndex].options || [])];
+    options[optIndex] = value;
+    newQs[qIndex].options = options;
+    setTestQuestions(newQs);
+  };
+
+  const handleCreateTest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!testTitle || !testDesc) return alert("Please provide title and description");
+    if (testQuestions.some(q => !q.text || q.options?.some(opt => !opt))) {
+      return alert("Please fill all questions and options");
+    }
+    
+    setIsSubmittingTest(true);
+    try {
+      const testRef = await addDoc(collection(db, 'mockTests'), {
+        title: testTitle,
+        description: testDesc,
+        durationMinutes: testDuration,
+        targetCategories: selectedCategoriesTest,
+        price: testIsFree ? 0 : testPrice,
+        isFree: testIsFree,
+        isFeaturedPremium: testIsPremiumFeatured,
+        totalMarks: testQuestions.reduce((acc, q) => acc + (q.marks || 4), 0),
+        isPublished: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+
+      for (const q of testQuestions) {
+        await addDoc(collection(db, 'mockTests', testRef.id, 'questions'), {
+          testId: testRef.id,
+          text: q.text,
+          options: q.options,
+          correctOptionIndex: q.correctOptionIndex,
+          marks: q.marks || 4,
+          negativeMarks: q.negativeMarks || 1,
+          createdAt: new Date().toISOString()
+        });
+      }
+
+      alert("Mock Test created successfully!");
+      setTestTitle('');
+      setTestDesc('');
+      setTestPrice(0);
+      setTestIsFree(true);
+      setTestIsPremiumFeatured(false);
+      setTestDuration(60);
+      setTestQuestions([{ id: '1', text: '', options: ['', '', '', ''], correctOptionIndex: 0, marks: 4, negativeMarks: 1 }]);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to create test");
+    } finally {
+      setIsSubmittingTest(false);
+    }
+  };
+
   const handleUpdateFeaturedTest = async () => {
     setIsUpdatingFeatured(true);
     try {
@@ -232,6 +328,13 @@ export function AdminDashboard() {
           >
             <LayoutGrid className="w-4 h-4 mr-2" />
             Add App
+          </button>
+          <button
+            onClick={() => setActiveTab('tests')}
+            className={cn("whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm flex items-center", activeTab === 'tests' ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300")}
+          >
+            <ClipboardList className="w-4 h-4 mr-2" />
+            Add Mock Test
           </button>
         </nav>
       </div>
@@ -384,6 +487,177 @@ export function AdminDashboard() {
                 />
               </div>
               <Button type="submit" isLoading={isSubmittingApp}>Publish App Post</Button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'tests' && (
+        <div className="max-w-4xl">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-4 flex items-center">
+              <ClipboardList className="w-5 h-5 mr-2 text-blue-600" />
+              Create CBT Mock Test
+            </h2>
+            <form onSubmit={handleCreateTest} className="space-y-8">
+              {/* Basic Details */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Basic Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700">Test Title *</label>
+                    <input 
+                      type="text" 
+                      value={testTitle}
+                      onChange={e => setTestTitle(e.target.value)}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                      required
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700">Description *</label>
+                    <textarea 
+                      value={testDesc}
+                      onChange={e => setTestDesc(e.target.value)}
+                      rows={2} 
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Duration (Minutes) *</label>
+                    <input 
+                      type="number" 
+                      value={testDuration}
+                      onChange={e => setTestDuration(Number(e.target.value))}
+                      min="1"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Pricing *</label>
+                    <div className="mt-1 flex items-center space-x-4">
+                      <label className="inline-flex items-center">
+                        <input type="radio" checked={testIsFree} onChange={() => setTestIsFree(true)} className="form-radio text-blue-600" />
+                        <span className="ml-2 text-sm text-gray-700">Free</span>
+                      </label>
+                      <label className="inline-flex items-center">
+                        <input type="radio" checked={!testIsFree} onChange={() => setTestIsFree(false)} className="form-radio text-blue-600" />
+                        <span className="ml-2 text-sm text-gray-700">Premium</span>
+                      </label>
+                      {!testIsFree && (
+                        <input 
+                          type="number" 
+                          value={testPrice}
+                          onChange={e => setTestPrice(Number(e.target.value))}
+                          placeholder="Price (₹)"
+                          className="block w-24 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm" 
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                {!testIsFree && (
+                  <div className="flex items-center">
+                    <input
+                      id="isFeaturedPremium"
+                      type="checkbox"
+                      checked={testIsPremiumFeatured}
+                      onChange={e => setTestIsPremiumFeatured(e.target.checked)}
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <label htmlFor="isFeaturedPremium" className="ml-2 block text-sm text-gray-900">
+                      Feature on homepage (Premium Mock Test section)
+                    </label>
+                  </div>
+                )}
+                
+                <div className="pt-2">
+                  <TargetAudienceSelector 
+                    selectedCategories={selectedCategoriesTest} 
+                    onChange={setSelectedCategoriesTest} 
+                  />
+                </div>
+              </div>
+
+              {/* Questions Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b pb-2">
+                  <h3 className="text-lg font-semibold text-gray-900">Questions ({testQuestions.length})</h3>
+                </div>
+                
+                <div className="space-y-6">
+                  {testQuestions.map((q, qIndex) => (
+                    <div key={q.id} className="p-4 bg-gray-50 border border-gray-200 rounded-lg relative">
+                      <div className="absolute top-4 right-4 flex space-x-2">
+                        <button type="button" onClick={() => removeTestQuestion(qIndex)} className="text-red-500 hover:text-red-700 p-1">
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
+                      
+                      <h4 className="font-medium text-gray-900 mb-4">Question {qIndex + 1}</h4>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <textarea 
+                            value={q.text}
+                            onChange={e => updateTestQuestion(qIndex, 'text', e.target.value)}
+                            placeholder="Type question here..."
+                            rows={2} 
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            required
+                          />
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-4 border-l-2 border-blue-200">
+                          {q.options?.map((opt, optIndex) => (
+                            <div key={optIndex} className="flex items-center space-x-2">
+                              <input 
+                                type="radio" 
+                                name={`correct-${q.id}`} 
+                                checked={q.correctOptionIndex === optIndex}
+                                onChange={() => updateTestQuestion(qIndex, 'correctOptionIndex', optIndex)}
+                                className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                              />
+                              <input 
+                                type="text"
+                                value={opt}
+                                onChange={e => updateTestOption(qIndex, optIndex, e.target.value)}
+                                placeholder={`Option ${optIndex + 1}`}
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                                required
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4 max-w-xs pt-2">
+                           <div>
+                             <label className="block text-xs font-medium text-gray-700">Marks</label>
+                             <input type="number" value={q.marks} onChange={e => updateTestQuestion(qIndex, 'marks', Number(e.target.value))} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-sm" />
+                           </div>
+                           <div>
+                             <label className="block text-xs font-medium text-gray-700">Negative Marks</label>
+                             <input type="number" value={q.negativeMarks} onChange={e => updateTestQuestion(qIndex, 'negativeMarks', Number(e.target.value))} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-sm" />
+                           </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <Button type="button" variant="outline" onClick={addTestQuestion} className="w-full border-dashed border-2">
+                  <Plus className="w-4 h-4 mr-2" /> Add Another Question
+                </Button>
+              </div>
+
+              <div className="pt-6 border-t">
+                <Button type="submit" isLoading={isSubmittingTest} className="w-full md:w-auto">
+                  Publish CBT Mock Test
+                </Button>
+              </div>
             </form>
           </div>
         </div>
