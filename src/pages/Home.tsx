@@ -114,7 +114,7 @@ export function Home() {
                 <div className="shrink-0 text-center bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm min-w-[250px]">
                   <p className="text-gray-400 text-sm mb-1 uppercase tracking-wider font-semibold">Unlock Access</p>
                   <p className="text-4xl font-extrabold text-white mb-6">₹{featuredTest.price}</p>
-                  <Link to={`/mock-tests/${featuredTest.id}`}>
+                  <Link to={`/mock-test/${featuredTest.id}`}>
                     <Button size="lg" className="w-full bg-white text-gray-900 hover:bg-gray-100 font-bold text-lg">
                       Attempt Premium Test
                     </Button>

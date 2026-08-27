@@ -19,7 +19,6 @@ export function MockTestList() {
       try {
         const q = query(
           collection(db, 'mockTests'), 
-          where('isPublished', '==', true),
           where('targetCategories', 'array-contains', classId)
         );
         const querySnapshot = await getDocs(q);
@@ -30,7 +29,6 @@ export function MockTestList() {
         
         const qAll = query(
           collection(db, 'mockTests'),
-          where('isPublished', '==', true),
           where('targetCategories', 'array-contains', 'all')
         );
         const snapshotAll = await getDocs(qAll);
@@ -110,7 +108,7 @@ export function MockTestList() {
                 </div>
               </div>
               <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
-                <Link to={`/mock-tests/${test.id}`} className="block">
+                <Link to={`/mock-test/${test.id}`} className="block">
                   <Button className="w-full">
                     View Details
                   </Button>

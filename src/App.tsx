@@ -64,7 +64,7 @@ export default function App() {
           <Route path="study-material/:id" element={<MaterialDetail />} />
           <Route path="notes/:classId" element={<MaterialList />} />
           
-          <Route path="mock-tests/:id" element={<MockTestDetail />} />
+          <Route path="mock-test/:id" element={<MockTestDetail />} />
           <Route path="mock-tests/:classId" element={<MockTestList />} />
           <Route path="test/:testId/result/:attemptId" element={<MockTestResult />} />
           
