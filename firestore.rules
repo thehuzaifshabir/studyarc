@@ -1,0 +1,130 @@
+// Firebase rules for the educational platform
+// Based on firebase-blueprint.json
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    // Core helpers
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isAdmin() {
+      // For this app, let's verify if the user exists in the admin user collection 
+      // or if their role is admin/superadmin in users collection
+      return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'superadmin'];
+    }
+
+    // Validation functions
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'role', 'createdAt', 'updatedAt']) &&
+             data.uid is string && data.uid.size() <= 128 &&
+             data.email is string && data.email.size() <= 100 &&
+             data.role is string && data.role in ['student', 'admin', 'superadmin'] &&
+             data.createdAt is string &&
+             data.updatedAt is string;
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      // Public list is not allowed. Admin can list all.
+      allow list: if isAdmin();
+      
+      // Users can create their own profile. Admin can create any profile.
+      allow create: if (isOwner(userId) && isValidUser(incoming()) && incoming().uid == userId && incoming().role == 'student') ||
+                       (isAdmin() && isValidUser(incoming()) && incoming().uid == userId);
+                       
+      // Users can update their own non-privileged info. Admin can update everything.
+      allow update: if (isOwner(userId) && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'class', 'targetExam', 'preferredSubjects', 'updatedAt']) && incoming().updatedAt == request.time) ||
+                       isAdmin();
+    }
+    
+    match /studyMaterials/{materialId} {
+      allow read: if true; // Public can see materials
+      allow write: if isAdmin(); // Only admins can create/update/delete
+    }
+
+    match /mockTests/{testId} {
+      allow read: if true; // Public can see tests
+      allow write: if isAdmin();
+    }
+
+    match /mockTests/{testId}/questions/{questionId} {
+      // Only users who have an active entitlement or if it's a free test can read?
+      // Since it's a subcollection, we might want to restrict reading to when they actually start.
+      // But for simplicity in a serverless setup without a custom token claim, 
+      // we allow authenticated users to read if the test is free, or if they have an entitlement.
+      // However, we can also just rely on the frontend fetching this after starting the test attempt,
+      // and for security, we check if they have an entitlement or if test is free.
+      allow read: if isSignedIn() && (
+        get(/databases/$(database)/documents/mockTests/$(testId)).data.isFree == true ||
+        exists(/databases/$(database)/documents/entitlements/$(request.auth.uid + "_" + testId)) ||
+        isAdmin()
+      );
+      allow write: if isAdmin();
+    }
+
+    match /testAttempts/{attemptId} {
+      allow read: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+      allow update: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+      // Deleting attempts might be an admin-only operation
+      allow delete: if isAdmin();
+    }
+    
+    match /testAttempts/{attemptId}/answers/{answerId} {
+      allow read: if isSignedIn() && (get(/databases/$(database)/documents/testAttempts/$(attemptId)).data.userId == request.auth.uid || isAdmin());
+      allow write: if isSignedIn() && get(/databases/$(database)/documents/testAttempts/$(attemptId)).data.userId == request.auth.uid;
+    }
+
+    match /orders/{orderId} {
+      // User can read their own orders. Admin can read all.
+      allow read: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+      allow write: if isAdmin(); // Orders created by Server (Admin SDK)
+    }
+
+    match /entitlements/{entitlementId} {
+      allow read: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+      allow write: if isAdmin(); // Entitlements created by Server (Admin SDK)
+    }
+
+    match /apps/{appId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /donations/{donationId} {
+      // Donors might not be registered users, but let's assume they are or anonymous.
+      allow read: if isAdmin() || (isSignedIn() && existing().userId == request.auth.uid) || (existing().isAnonymous == false); 
+      // Server handles creation for security, or we allow create with pending status.
+      allow create: if true; // We can let client create pending donations, server marks paid.
+      allow update: if isAdmin();
+    }
+
+    // Site settings, banners, faqs
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /banners/{bannerId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /faqs/{faqId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /testimonials/{testimonialId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

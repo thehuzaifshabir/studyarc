@@ -1,0 +1,225 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A student or admin user on the platform.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "name": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "format": "email", "maxLength": 100 },
+        "role": { "type": "string", "enum": ["student", "admin", "superadmin"] },
+        "class": { "type": "string", "maxLength": 50 },
+        "targetExam": { "type": "string", "maxLength": 50 },
+        "preferredSubjects": { "type": "array", "items": { "type": "string", "maxLength": 50 } },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role", "createdAt", "updatedAt"]
+    },
+    "StudyMaterial": {
+      "title": "StudyMaterial",
+      "description": "Educational resource (e.g. PDF, notes).",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "maxLength": 200 },
+        "slug": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "thumbnailUrl": { "type": "string", "format": "uri" },
+        "fileUrl": { "type": "string", "format": "uri" },
+        "category": { "type": "string", "maxLength": 50 },
+        "subject": { "type": "string", "maxLength": 50 },
+        "exam": { "type": "string", "maxLength": 50 },
+        "class": { "type": "string", "maxLength": 50 },
+        "price": { "type": "number", "minimum": 0 },
+        "isFree": { "type": "boolean" },
+        "isPublished": { "type": "boolean" },
+        "isFeatured": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "slug", "price", "isFree", "isPublished", "createdAt", "updatedAt"]
+    },
+    "MockTest": {
+      "title": "MockTest",
+      "description": "A test definition.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "exam": { "type": "string", "maxLength": 50 },
+        "subject": { "type": "string", "maxLength": 50 },
+        "class": { "type": "string", "maxLength": 50 },
+        "durationMinutes": { "type": "number", "minimum": 1, "maximum": 600 },
+        "totalMarks": { "type": "number", "minimum": 0 },
+        "negativeMarking": { "type": "number" },
+        "instructions": { "type": "string", "maxLength": 2000 },
+        "price": { "type": "number", "minimum": 0 },
+        "isFree": { "type": "boolean" },
+        "maxAttempts": { "type": "number", "minimum": 1 },
+        "isPublished": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "durationMinutes", "isFree", "isPublished", "createdAt", "updatedAt"]
+    },
+    "Question": {
+      "title": "Question",
+      "description": "A single question belonging to a MockTest.",
+      "type": "object",
+      "properties": {
+        "testId": { "type": "string" },
+        "text": { "type": "string", "maxLength": 2000 },
+        "imageUrl": { "type": "string", "format": "uri" },
+        "options": { "type": "array", "items": { "type": "string", "maxLength": 500 } },
+        "correctOptionIndex": { "type": "number", "minimum": 0, "maximum": 3 },
+        "explanation": { "type": "string", "maxLength": 2000 },
+        "marks": { "type": "number", "minimum": 1 },
+        "negativeMarks": { "type": "number" },
+        "subject": { "type": "string", "maxLength": 50 },
+        "topic": { "type": "string", "maxLength": 50 },
+        "difficulty": { "type": "string", "enum": ["easy", "medium", "hard"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["testId", "text", "options", "correctOptionIndex", "marks", "createdAt"]
+    },
+    "TestAttempt": {
+      "title": "TestAttempt",
+      "description": "A user's attempt at taking a MockTest.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "testId": { "type": "string" },
+        "status": { "type": "string", "enum": ["in_progress", "completed", "auto_submitted"] },
+        "startTime": { "type": "string", "format": "date-time" },
+        "endTime": { "type": "string", "format": "date-time" },
+        "lastActivityTime": { "type": "string", "format": "date-time" },
+        "score": { "type": "number" },
+        "totalCorrect": { "type": "number" },
+        "totalIncorrect": { "type": "number" },
+        "totalUnattempted": { "type": "number" },
+        "timeSpentSeconds": { "type": "number" }
+      },
+      "required": ["userId", "testId", "status", "startTime", "lastActivityTime"]
+    },
+    "TestAnswer": {
+      "title": "TestAnswer",
+      "description": "A specific answer in a test attempt.",
+      "type": "object",
+      "properties": {
+        "attemptId": { "type": "string" },
+        "questionId": { "type": "string" },
+        "selectedOptionIndex": { "type": "number", "minimum": -1, "maximum": 3 },
+        "status": { "type": "string", "enum": ["not_visited", "not_answered", "answered", "marked_for_review", "answered_marked_for_review"] },
+        "timeSpentSeconds": { "type": "number" }
+      },
+      "required": ["attemptId", "questionId", "status"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Purchase transaction record.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "productId": { "type": "string" },
+        "productType": { "type": "string", "enum": ["study_material", "mock_test", "app"] },
+        "amount": { "type": "number" },
+        "currency": { "type": "string", "maxLength": 10 },
+        "status": { "type": "string", "enum": ["pending", "paid", "failed", "refunded", "cancelled"] },
+        "gatewayReferenceId": { "type": "string", "maxLength": 100 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "productId", "productType", "amount", "status", "createdAt"]
+    },
+    "Entitlement": {
+      "title": "Entitlement",
+      "description": "Grants access to a paid product.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "productId": { "type": "string" },
+        "productType": { "type": "string", "enum": ["study_material", "mock_test", "app"] },
+        "orderId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "productId", "productType", "createdAt"]
+    },
+    "AppProduct": {
+      "title": "AppProduct",
+      "description": "A downloadable app or tool.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "maxLength": 200 },
+        "slug": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "logoUrl": { "type": "string", "format": "uri" },
+        "platform": { "type": "string", "maxLength": 50 },
+        "version": { "type": "string", "maxLength": 20 },
+        "downloadUrl": { "type": "string", "format": "uri" },
+        "price": { "type": "number", "minimum": 0 },
+        "isFree": { "type": "boolean" },
+        "isPublished": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "slug", "price", "isFree", "isPublished", "createdAt", "updatedAt"]
+    },
+    "Donation": {
+      "title": "Donation",
+      "description": "User donation to the creator.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string", "maxLength": 100 },
+        "amount": { "type": "number", "minimum": 1 },
+        "message": { "type": "string", "maxLength": 500 },
+        "isAnonymous": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["pending", "paid", "failed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["amount", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles. Created on first login."
+    },
+    "studyMaterials/{materialId}": {
+      "schema": { "$ref": "#/entities/StudyMaterial" },
+      "description": "Study materials available on the platform."
+    },
+    "mockTests/{testId}": {
+      "schema": { "$ref": "#/entities/MockTest" },
+      "description": "Mock test definitions."
+    },
+    "mockTests/{testId}/questions/{questionId}": {
+      "schema": { "$ref": "#/entities/Question" },
+      "description": "Questions belonging to a mock test."
+    },
+    "testAttempts/{attemptId}": {
+      "schema": { "$ref": "#/entities/TestAttempt" },
+      "description": "User's attempt at a mock test."
+    },
+    "testAttempts/{attemptId}/answers/{answerId}": {
+      "schema": { "$ref": "#/entities/TestAnswer" },
+      "description": "User's answer to a specific question during an attempt."
+    },
+    "orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Records of purchases."
+    },
+    "entitlements/{entitlementId}": {
+      "schema": { "$ref": "#/entities/Entitlement" },
+      "description": "Records of access granted to a user for a product."
+    },
+    "apps/{appId}": {
+      "schema": { "$ref": "#/entities/AppProduct" },
+      "description": "Apps available for download."
+    },
+    "donations/{donationId}": {
+      "schema": { "$ref": "#/entities/Donation" },
+      "description": "Donations made by users."
+    }
+  }
+}
