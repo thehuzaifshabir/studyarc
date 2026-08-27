@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { runClientSeed } from './seedData';
 import { Button } from '../../components/ui/Button';
 import { db } from '../../lib/firebase';
-import { doc, updateDoc, collection, getDocs, query, where, addDoc } from 'firebase/firestore';
+import { doc, updateDoc, collection, getDocs, query, where, addDoc, deleteDoc } from 'firebase/firestore';
 import { useAuthStore } from '../../lib/store';
 import { Database, ShieldAlert, LayoutDashboard, Settings, Megaphone, FileText, LayoutGrid, ClipboardList, Plus, Trash2 } from 'lucide-react';
 import { TargetAudienceSelector } from '../../components/TargetAudienceSelector';
-import { MockTest, Question } from '../../types';
+import { MockTest, Question, Announcement, StudyMaterial, AppProduct } from '../../types';
 import { cn } from '../../lib/utils';
 
 export function AdminDashboard() {
@@ -14,6 +14,11 @@ export function AdminDashboard() {
   const [isSeeding, setIsSeeding] = useState(false);
   const { user } = useAuthStore();
   
+  // Content Lists
+  const [announcementsList, setAnnouncementsList] = useState<Announcement[]>([]);
+  const [notesList, setNotesList] = useState<StudyMaterial[]>([]);
+  const [appsList, setAppsList] = useState<AppProduct[]>([]);
+
   // Announcements State
   const [selectedCategoriesAnn, setSelectedCategoriesAnn] = useState<string[]>(['all']);
   const [annTitle, setAnnTitle] = useState('');
@@ -54,18 +59,43 @@ export function AdminDashboard() {
   const [featuredTestId, setFeaturedTestId] = useState('');
   const [isUpdatingFeatured, setIsUpdatingFeatured] = useState(false);
 
-  useEffect(() => {
-    async function fetchTests() {
-      const q = query(collection(db, 'mockTests'));
-      const snapshot = await getDocs(q);
-      const tests = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as MockTest));
-      setMockTests(tests);
+  const fetchAllContent = async () => {
+    try {
+      const [testsSnap, annSnap, notesSnap, appsSnap] = await Promise.all([
+        getDocs(query(collection(db, 'mockTests'))),
+        getDocs(query(collection(db, 'announcements'))),
+        getDocs(query(collection(db, 'studyMaterials'))),
+        getDocs(query(collection(db, 'apps')))
+      ]);
       
+      const tests = testsSnap.docs.map(d => ({ id: d.id, ...d.data() } as MockTest));
+      setMockTests(tests);
       const featured = tests.find(t => t.isFeaturedPremium);
       if (featured) setFeaturedTestId(featured.id);
+      
+      setAnnouncementsList(annSnap.docs.map(d => ({ id: d.id, ...d.data() } as Announcement)));
+      setNotesList(notesSnap.docs.map(d => ({ id: d.id, ...d.data() } as StudyMaterial)));
+      setAppsList(appsSnap.docs.map(d => ({ id: d.id, ...d.data() } as AppProduct)));
+    } catch (e) {
+      console.error(e);
     }
-    fetchTests();
+  };
+
+  useEffect(() => {
+    fetchAllContent();
   }, []);
+
+  const handleDelete = async (collectionName: string, docId: string) => {
+    if (!window.confirm("Are you sure you want to delete this item? This action cannot be undone.")) return;
+    try {
+      await deleteDoc(doc(db, collectionName, docId));
+      alert("Item deleted successfully!");
+      fetchAllContent();
+    } catch (e) {
+      console.error(e);
+      alert("Failed to delete item. Ensure you have admin rights in Firestore rules.");
+    }
+  };
 
   const handleSeed = async () => {
     setIsSeeding(true);
@@ -109,6 +139,7 @@ export function AdminDashboard() {
       alert("Announcement created successfully");
       setAnnTitle('');
       setAnnContent('');
+      fetchAllContent();
     } catch (error) {
       console.error(error);
       alert("Failed to create announcement");
@@ -141,6 +172,7 @@ export function AdminDashboard() {
       setNoteDesc('');
       setNoteThumb('');
       setNoteLink('');
+      fetchAllContent();
     } catch (error) {
       console.error(error);
       alert("Failed to create note");
@@ -172,6 +204,7 @@ export function AdminDashboard() {
       setAppDesc('');
       setAppLogo('');
       setAppLink('');
+      fetchAllContent();
     } catch (error) {
       console.error(error);
       alert("Failed to create app");
@@ -255,6 +288,7 @@ export function AdminDashboard() {
       setTestIsPremiumFeatured(false);
       setTestDuration(60);
       setTestQuestions([{ id: '1', text: '', options: ['', '', '', ''], correctOptionIndex: 0, marks: 4, negativeMarks: 1 }]);
+      fetchAllContent();
     } catch (error) {
       console.error(error);
       alert("Failed to create test");
@@ -371,6 +405,24 @@ export function AdminDashboard() {
               <Button type="submit" isLoading={isSubmittingAnn}>Publish Announcement</Button>
             </form>
           </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-4">Manage Announcements</h2>
+            <div className="space-y-4">
+              {announcementsList.map(ann => (
+                <div key={ann.id} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{ann.title}</h3>
+                    <p className="text-sm text-gray-500">{new Date(ann.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <button onClick={() => handleDelete('announcements', ann.id)} className="text-red-500 hover:text-red-700 p-2">
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              ))}
+              {announcementsList.length === 0 && <p className="text-sm text-gray-500">No announcements found.</p>}
+            </div>
+          </div>
         </div>
       )}
 
@@ -430,6 +482,24 @@ export function AdminDashboard() {
               <Button type="submit" isLoading={isSubmittingNote}>Publish Note Post</Button>
             </form>
           </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-4">Manage Notes</h2>
+            <div className="space-y-4">
+              {notesList.map(note => (
+                <div key={note.id} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{note.title}</h3>
+                    <p className="text-sm text-gray-500">{new Date(note.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <button onClick={() => handleDelete('studyMaterials', note.id)} className="text-red-500 hover:text-red-700 p-2">
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              ))}
+              {notesList.length === 0 && <p className="text-sm text-gray-500">No notes found.</p>}
+            </div>
+          </div>
         </div>
       )}
 
@@ -488,6 +558,24 @@ export function AdminDashboard() {
               </div>
               <Button type="submit" isLoading={isSubmittingApp}>Publish App Post</Button>
             </form>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-4">Manage Apps</h2>
+            <div className="space-y-4">
+              {appsList.map(app => (
+                <div key={app.id} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{app.title}</h3>
+                    <p className="text-sm text-gray-500">{new Date(app.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <button onClick={() => handleDelete('apps', app.id)} className="text-red-500 hover:text-red-700 p-2">
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              ))}
+              {appsList.length === 0 && <p className="text-sm text-gray-500">No apps found.</p>}
+            </div>
           </div>
         </div>
       )}
@@ -659,6 +747,24 @@ export function AdminDashboard() {
                 </Button>
               </div>
             </form>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-6 border-b pb-4">Manage Tests</h2>
+            <div className="space-y-4">
+              {mockTests.map(test => (
+                <div key={test.id} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{test.title}</h3>
+                    <p className="text-sm text-gray-500">{new Date(test.createdAt).toLocaleDateString()} • {test.durationMinutes} mins</p>
+                  </div>
+                  <button onClick={() => handleDelete('mockTests', test.id)} className="text-red-500 hover:text-red-700 p-2">
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              ))}
+              {mockTests.length === 0 && <p className="text-sm text-gray-500">No tests found.</p>}
+            </div>
           </div>
         </div>
       )}
