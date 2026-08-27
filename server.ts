@@ -7,9 +7,9 @@ import { getFirestore } from "firebase-admin/firestore";
 // Basic Firebase Admin init (placeholder for real credentials setup)
 // In production, you'd use GOOGLE_APPLICATION_CREDENTIALS or a service account JSON
 try {
-  if (process.env.FIREBASE_PROJECT_ID) {
+  if (process.env.FIREBASE_PROJECT_ID || "mystudyarc-bc892") {
     admin.initializeApp({
-      projectId: process.env.FIREBASE_PROJECT_ID
+      projectId: process.env.FIREBASE_PROJECT_ID || "mystudyarc-bc892"
     });
     console.log("Firebase Admin initialized");
   } else {
