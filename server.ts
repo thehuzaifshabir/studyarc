@@ -1,7 +1,8 @@
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
-import admin from "firebase-admin";
+import * as admin from "firebase-admin";
+import { getFirestore } from "firebase-admin/firestore";
 
 // Basic Firebase Admin init (placeholder for real credentials setup)
 // In production, you'd use GOOGLE_APPLICATION_CREDENTIALS or a service account JSON
@@ -47,7 +48,7 @@ app.post("/api/payments/verify", async (req, res) => {
   if (status === "success") {
     // 1. Create order record
     try {
-      const db = admin.firestore();
+      const db = getFirestore();
       
       const orderRef = db.collection('orders').doc(orderId);
       await orderRef.set({

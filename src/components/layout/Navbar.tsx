@@ -19,9 +19,9 @@ export function Navbar() {
   };
 
   const navLinks = [
-    { name: 'Study Material', path: '/study-material' },
-    { name: 'Mock Tests', path: '/mock-tests' },
-    { name: 'Apps', path: '/apps' },
+    { name: 'Notes', path: '/notes/select' },
+    { name: 'Mock Tests', path: '/mock-tests/select' },
+    { name: 'Apps', path: '/study-apps/select' },
     { name: 'Donate', path: '/donate' },
   ];
 

@@ -101,6 +101,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /announcements/{announcementId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /donations/{donationId} {
       // Donors might not be registered users, but let's assume they are or anonymous.
       allow read: if isAdmin() || (isSignedIn() && existing().userId == request.auth.uid) || (existing().isAnonymous == false); 

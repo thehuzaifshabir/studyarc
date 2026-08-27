@@ -5,7 +5,7 @@ import { db } from '../../lib/firebase';
 import { useAuthStore } from '../../lib/store';
 import { MockTest, Question, TestAttempt, TestAnswer } from '../../types';
 import { Button } from '../../components/ui/Button';
-import { Clock, Loader2, Flag, ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { Clock, Loader2, Flag, ChevronLeft, ChevronRight, Check, AlertTriangle } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 export function ExamInterface() {

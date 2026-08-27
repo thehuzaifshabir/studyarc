@@ -17,6 +17,8 @@ import { MockTestResult } from './pages/mock-tests/MockTestResult';
 import { MaterialList } from './pages/materials/MaterialList';
 import { MaterialDetail } from './pages/materials/MaterialDetail';
 import { AppList } from './pages/apps/AppList';
+import { AnnouncementsList } from './pages/announcements/AnnouncementsList';
+import { ClassSelection } from './pages/ClassSelection';
 import { Donate } from './pages/Donate';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { User } from './types';
@@ -57,13 +59,19 @@ export default function App() {
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           
-          <Route path="study-material" element={<MaterialList />} />
+          <Route path=":category/select" element={<ClassSelection />} />
+
           <Route path="study-material/:id" element={<MaterialDetail />} />
+          <Route path="notes/:classId" element={<MaterialList />} />
           
-          <Route path="mock-tests" element={<MockTestList />} />
           <Route path="mock-tests/:id" element={<MockTestDetail />} />
+          <Route path="mock-tests/:classId" element={<MockTestList />} />
+          <Route path="test/:testId/result/:attemptId" element={<MockTestResult />} />
           
-          <Route path="apps" element={<AppList />} />
+          <Route path="study-apps/:classId" element={<AppList />} />
+          
+          <Route path="announcements/:classId" element={<AnnouncementsList />} />
+
           <Route path="donate" element={<Donate />} />
           
           {/* Protected Routes */}

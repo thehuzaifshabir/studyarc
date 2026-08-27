@@ -17,10 +17,12 @@ export interface StudyMaterial {
   description: string;
   thumbnailUrl?: string;
   fileUrl?: string;
+  contentUrl?: string;
   category?: string;
   subject?: string;
   exam?: string;
   class?: string;
+  targetCategories?: string[];
   price: number;
   isFree: boolean;
   isPublished: boolean;
@@ -36,6 +38,8 @@ export interface MockTest {
   exam?: string;
   subject?: string;
   class?: string;
+  targetCategories?: string[];
+  isFeaturedPremium?: boolean;
   durationMinutes: number;
   totalMarks?: number;
   negativeMarking?: number;
@@ -109,8 +113,19 @@ export interface AppProduct {
   platform?: string;
   version?: string;
   downloadUrl?: string;
+  targetCategories?: string[];
   price: number;
   isFree: boolean;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  targetCategories?: string[];
   isPublished: boolean;
   createdAt: string;
   updatedAt: string;

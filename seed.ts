@@ -32,6 +32,7 @@ async function seed() {
       isFree: true,
       maxAttempts: 3,
       isPublished: true,
+      targetCategories: ['11th-jee'],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
@@ -50,6 +51,27 @@ async function seed() {
       isFree: false,
       maxAttempts: 5,
       isPublished: true,
+      targetCategories: ['12th-neet', 'neet-dropper'],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'test-premium-jee-mock',
+      title: 'Premium JEE Advanced Mock Test',
+      description: 'Challenge yourself with a full exam-style mock test designed for serious preparation. Real exam simulation.',
+      exam: 'JEE Advanced',
+      subject: 'Physics, Chemistry, Maths',
+      class: 'Class 12',
+      durationMinutes: 180,
+      totalMarks: 300,
+      negativeMarking: 1,
+      instructions: 'Standard JEE Advanced marking scheme applies.',
+      price: 299,
+      isFree: false,
+      maxAttempts: 2,
+      isPublished: true,
+      isFeaturedPremium: true,
+      targetCategories: ['12th-jee', 'jee-dropper'],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
@@ -126,6 +148,7 @@ async function seed() {
       isFree: true,
       isPublished: true,
       isFeatured: true,
+      targetCategories: ['12th-jee', 'jee-dropper', '11th-jee'],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
@@ -142,6 +165,7 @@ async function seed() {
       isFree: false,
       isPublished: true,
       isFeatured: true,
+      targetCategories: ['12th-neet', 'neet-dropper'],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
@@ -164,6 +188,7 @@ async function seed() {
       price: 0,
       isFree: true,
       isPublished: true,
+      targetCategories: ['all'],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
@@ -177,6 +202,7 @@ async function seed() {
       price: 99,
       isFree: false,
       isPublished: true,
+      targetCategories: ['11th-jee', '12th-jee', 'jee-dropper', '11th-neet', '12th-neet', 'neet-dropper'],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
@@ -185,6 +211,33 @@ async function seed() {
   for (const app of apps) {
     await db.collection('apps').doc(app.id).set(app);
     console.log(`Created app: ${app.title}`);
+  }
+
+  // 5. Seed Announcements
+  const announcements = [
+    {
+      id: 'ann-jee-mains-date',
+      title: 'JEE Mains Session 1 Dates Announced!',
+      content: 'NTA has released the official schedule for JEE Mains Session 1. Check the latest circular and start your final revision today.',
+      isPublished: true,
+      targetCategories: ['12th-jee', 'jee-dropper'],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'ann-new-app-launch',
+      title: 'Welcome to the EduSphere Platform',
+      content: 'We are thrilled to launch the new version of our platform featuring structured classes, mock tests, and comprehensive study materials.',
+      isPublished: true,
+      targetCategories: ['all'],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
+  ];
+
+  for (const ann of announcements) {
+    await db.collection('announcements').doc(ann.id).set(ann);
+    console.log(`Created announcement: ${ann.title}`);
   }
 
   console.log("Seeding complete!");

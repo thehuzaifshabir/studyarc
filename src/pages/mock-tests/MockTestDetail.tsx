@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { doc, getDoc, collection, query, where, getDocs, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
-import { MockTest, Entitlement } from '../../types';
+import { MockTest } from '../../types';
 import { useAuthStore } from '../../lib/store';
 import { Button } from '../../components/ui/Button';
 import { Clock, CheckCircle, AlertTriangle } from 'lucide-react';
