@@ -32,7 +32,7 @@ export function Navbar() {
           <div className="flex items-center">
             <Link to="/" className="flex flex-shrink-0 items-center">
               <BookOpen className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900 tracking-tight">EduSphere</span>
+              <span className="ml-2 text-xl font-bold text-gray-900 tracking-tight">Study Arc</span>
             </Link>
             <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
               {navLinks.map((link) => (

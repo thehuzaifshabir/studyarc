@@ -10,7 +10,7 @@ export function Footer() {
           <div className="col-span-1 md:col-span-1">
             <Link to="/" className="flex items-center mb-4">
               <BookOpen className="h-8 w-8 text-blue-500" />
-              <span className="ml-2 text-xl font-bold text-white tracking-tight">EduSphere</span>
+              <span className="ml-2 text-xl font-bold text-white tracking-tight">Study Arc</span>
             </Link>
             <p className="text-sm text-gray-400 mb-6 leading-relaxed">
               Prepare smarter. Practice harder. Crack it. Your ultimate destination for JEE and NEET preparation.
@@ -66,7 +66,7 @@ export function Footer() {
         
         <div className="mt-12 border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-gray-400">
-            &copy; {new Date().getFullYear()} EduSphere. All rights reserved.
+            &copy; {new Date().getFullYear()} Study Arc. All rights reserved.
           </p>
           <p className="text-sm text-gray-500 mt-4 md:mt-0 flex items-center">
             Built with ❤️ for students

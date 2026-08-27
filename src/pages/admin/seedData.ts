@@ -167,7 +167,7 @@ export async function runClientSeed() {
   const apps: AppProduct[] = [
     {
       id: 'app-pomodoro',
-      title: 'EduSphere Study Timer',
+      title: 'Study Arc Study Timer',
       slug: 'edusphere-study-timer',
       description: 'A focused pomodoro timer with exam-specific study blocks and analytics.',
       platform: 'Android',
@@ -212,7 +212,7 @@ export async function runClientSeed() {
     },
     {
       id: 'ann-new-app-launch',
-      title: 'Welcome to the EduSphere Platform',
+      title: 'Welcome to the Study Arc Platform',
       content: 'We are thrilled to launch the new version of our platform featuring structured classes, mock tests, and comprehensive study materials.',
       isPublished: true,
       targetCategories: ['all'],

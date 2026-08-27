@@ -1,6 +1,8 @@
 {
-  "name": "",
-  "description": "",
+  "name": "Study Arc",
+  "description": "An educational application for test preparation and study materials.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
