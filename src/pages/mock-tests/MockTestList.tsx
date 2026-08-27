@@ -75,7 +75,7 @@ export function MockTestList() {
           <p className="mt-2 text-gray-500">Check back later for new tests.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
           {tests.map((test) => (
             <div key={test.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col">
               <div className="p-6 flex-grow">

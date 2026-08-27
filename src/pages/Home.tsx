@@ -44,34 +44,34 @@ export function Home() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-blue-50 to-white pt-20 pb-16 overflow-hidden relative">
+      <section className="bg-gradient-to-b from-blue-50 to-white pt-8 pb-8 md:pt-20 md:pb-16 overflow-hidden relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight mb-4">
+          <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight mb-4">
             Your preparation. Your pace. Your goal.
           </h1>
-          <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-base md:text-xl text-gray-600 mb-6 md:mb-8 max-w-2xl mx-auto">
             Select what you want to focus on today and start studying efficiently.
           </p>
         </div>
       </section>
 
       {/* Main Categories Section */}
-      <section className="py-8 bg-white">
+      <section className="py-4 md:py-8 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
             {CONTENT_CATEGORIES.map(category => (
               <Link
                 key={category.id}
                 to={`${category.path}/select`}
-                className="group flex flex-col bg-white rounded-2xl p-6 shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-300 transition-all text-center"
+                className="group flex flex-col bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-300 transition-all text-center h-full"
               >
-                <div className="mx-auto w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="mx-auto w-12 h-12 md:w-16 md:h-16 bg-gray-50 rounded-xl md:rounded-2xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 transition-transform">
                   {getCategoryIcon(category.id)}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{category.label}</h3>
-                <p className="text-sm text-gray-500 flex-grow mb-4">{category.description}</p>
-                <span className="inline-flex items-center justify-center text-sm font-semibold text-blue-600 group-hover:text-blue-700">
-                  Browse {category.label} <ArrowRight className="ml-1 w-4 h-4" />
+                <h3 className="text-sm md:text-xl font-bold text-gray-900 mb-1 md:mb-2">{category.label}</h3>
+                <p className="hidden md:block text-sm text-gray-500 flex-grow mb-4">{category.description}</p>
+                <span className="inline-flex items-center justify-center text-xs md:text-sm font-semibold text-blue-600 group-hover:text-blue-700 mt-auto">
+                  <span className="hidden md:inline">Browse </span>{category.label} <ArrowRight className="ml-1 w-3 h-3 md:w-4 md:h-4" />
                 </span>
               </Link>
             ))}
@@ -92,30 +92,30 @@ export function Home() {
             <div className="bg-gradient-to-br from-gray-900 to-indigo-900 rounded-3xl overflow-hidden shadow-2xl relative">
               <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-blue-500 opacity-20 blur-3xl"></div>
               
-              <div className="relative z-10 p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="relative z-10 p-6 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
                 <div className="flex-1 text-center md:text-left">
-                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-300 text-sm font-semibold mb-6 border border-yellow-500/30">
+                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-300 text-xs md:text-sm font-semibold mb-4 md:mb-6 border border-yellow-500/30">
                     Premium Test Series
                   </div>
-                  <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
+                  <h3 className="text-2xl md:text-4xl font-extrabold text-white mb-3 md:mb-4">
                     {featuredTest.title}
                   </h3>
-                  <p className="text-lg text-indigo-200 mb-6 max-w-2xl">
+                  <p className="text-base md:text-lg text-indigo-200 mb-4 md:mb-6 max-w-2xl">
                     {featuredTest.description}
                   </p>
-                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm font-medium text-gray-300 mb-8">
-                    <span className="bg-white/10 px-3 py-1.5 rounded-lg">{featuredTest.exam}</span>
-                    <span className="bg-white/10 px-3 py-1.5 rounded-lg">{featuredTest.durationMinutes} Mins</span>
-                    <span className="bg-white/10 px-3 py-1.5 rounded-lg">{featuredTest.totalMarks} Marks</span>
-                    <span className="bg-white/10 px-3 py-1.5 rounded-lg">-{featuredTest.negativeMarking} Negative</span>
+                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-4 text-xs md:text-sm font-medium text-gray-300 mb-6 md:mb-8">
+                    <span className="bg-white/10 px-2 py-1 md:px-3 md:py-1.5 rounded-lg">{featuredTest.exam}</span>
+                    <span className="bg-white/10 px-2 py-1 md:px-3 md:py-1.5 rounded-lg">{featuredTest.durationMinutes} Mins</span>
+                    <span className="bg-white/10 px-2 py-1 md:px-3 md:py-1.5 rounded-lg">{featuredTest.totalMarks} Marks</span>
+                    <span className="bg-white/10 px-2 py-1 md:px-3 md:py-1.5 rounded-lg">-{featuredTest.negativeMarking} Neg</span>
                   </div>
                 </div>
                 
-                <div className="shrink-0 text-center bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm min-w-[250px]">
-                  <p className="text-gray-400 text-sm mb-1 uppercase tracking-wider font-semibold">Unlock Access</p>
-                  <p className="text-4xl font-extrabold text-white mb-6">₹{featuredTest.price}</p>
+                <div className="shrink-0 text-center bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm w-full md:w-auto md:min-w-[250px]">
+                  <p className="text-gray-400 text-xs md:text-sm mb-1 uppercase tracking-wider font-semibold">Unlock Access</p>
+                  <p className="text-3xl md:text-4xl font-extrabold text-white mb-4 md:mb-6">₹{featuredTest.price}</p>
                   <Link to={`/mock-test/${featuredTest.id}`}>
-                    <Button size="lg" className="w-full bg-white text-gray-900 hover:bg-gray-100 font-bold text-lg">
+                    <Button size="lg" className="w-full bg-white text-gray-900 hover:bg-gray-100 font-bold text-base md:text-lg">
                       Attempt Premium Test
                     </Button>
                   </Link>

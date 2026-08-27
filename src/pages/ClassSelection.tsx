@@ -28,14 +28,14 @@ export function ClassSelection() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {TARGET_CLASSES.map((cls) => (
           <Link
             key={cls.id}
             to={`/${category}/${cls.id}`}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col items-center text-center hover:shadow-md hover:border-blue-300 transition-all group"
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 flex flex-col items-center justify-center text-center hover:shadow-md hover:border-blue-300 transition-all group min-h-[100px]"
           >
-            <span className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+            <span className="text-base sm:text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
               {cls.label}
             </span>
           </Link>

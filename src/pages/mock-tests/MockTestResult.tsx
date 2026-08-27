@@ -66,41 +66,41 @@ export function MockTestResult() {
         </div>
 
         {/* Stats Grid */}
-        <div className="md:col-span-2 grid grid-cols-2 gap-4">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center">
-            <div className="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center mr-4">
-              <CheckCircle className="w-6 h-6" />
+        <div className="md:col-span-2 grid grid-cols-2 gap-3 sm:gap-4">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 flex items-center">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center mr-3 sm:mr-4 shrink-0">
+              <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500">Correct</p>
-              <p className="text-2xl font-bold text-gray-900">{attempt.totalCorrect}</p>
+              <p className="text-xs sm:text-sm font-medium text-gray-500">Correct</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">{attempt.totalCorrect}</p>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center">
-            <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mr-4">
-              <XCircle className="w-6 h-6" />
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 flex items-center">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mr-3 sm:mr-4 shrink-0">
+              <XCircle className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500">Incorrect</p>
-              <p className="text-2xl font-bold text-gray-900">{attempt.totalIncorrect}</p>
+              <p className="text-xs sm:text-sm font-medium text-gray-500">Incorrect</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">{attempt.totalIncorrect}</p>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center">
-            <div className="w-12 h-12 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center mr-4">
-              <Target className="w-6 h-6" />
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 flex items-center">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center mr-3 sm:mr-4 shrink-0">
+              <Target className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500">Accuracy</p>
-              <p className="text-2xl font-bold text-gray-900">{accuracy.toFixed(1)}%</p>
+              <p className="text-xs sm:text-sm font-medium text-gray-500">Accuracy</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">{accuracy.toFixed(1)}%</p>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center">
-            <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-4">
-              <Clock className="w-6 h-6" />
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 flex items-center">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3 sm:mr-4 shrink-0">
+              <Clock className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500">Time Taken</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-xs sm:text-sm font-medium text-gray-500">Time Taken</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">
                 {Math.floor((attempt.timeSpentSeconds || 0) / 60)}m {(attempt.timeSpentSeconds || 0) % 60}s
               </p>
             </div>

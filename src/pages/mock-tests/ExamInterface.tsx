@@ -5,7 +5,7 @@ import { db } from '../../lib/firebase';
 import { useAuthStore } from '../../lib/store';
 import { MockTest, Question, TestAttempt, TestAnswer } from '../../types';
 import { Button } from '../../components/ui/Button';
-import { Clock, Loader2, Flag, ChevronLeft, ChevronRight, Check, AlertTriangle } from 'lucide-react';
+import { Clock, Loader2, Flag, ChevronLeft, ChevronRight, Check, AlertTriangle, LayoutGrid, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 export function ExamInterface() {
@@ -17,6 +17,7 @@ export function ExamInterface() {
   
   const [currentIndex, setCurrentIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [showMobilePalette, setShowMobilePalette] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
@@ -293,19 +294,25 @@ export function ExamInterface() {
   return (
     <div className="h-screen flex flex-col bg-gray-50 overflow-hidden font-sans">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center shadow-sm z-10 shrink-0">
-        <div className="flex items-center space-x-4">
-          <h1 className="text-xl font-bold text-gray-900 truncate max-w-md">{test.title}</h1>
+      <header className="bg-white border-b border-gray-200 px-3 md:px-4 py-3 flex flex-wrap gap-3 justify-between items-center shadow-sm z-20 shrink-0 sticky top-0">
+        <div className="flex items-center space-x-2 md:space-x-4 max-w-[50%] md:max-w-md">
+          <h1 className="text-base md:text-xl font-bold text-gray-900 truncate">{test.title}</h1>
         </div>
-        <div className="flex items-center space-x-6">
-          <div className="flex items-center text-lg font-bold bg-gray-100 px-4 py-2 rounded-lg">
-            <Clock className={cn("w-5 h-5 mr-2", timeLeft !== null && timeLeft < 300 ? "text-red-500 animate-pulse" : "text-gray-600")} />
+        <div className="flex items-center space-x-2 md:space-x-6">
+          <div className="flex items-center text-sm md:text-lg font-bold bg-gray-100 px-2 md:px-4 py-1.5 md:py-2 rounded-lg">
+            <Clock className={cn("w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2", timeLeft !== null && timeLeft < 300 ? "text-red-500 animate-pulse" : "text-gray-600")} />
             <span className={timeLeft !== null && timeLeft < 300 ? "text-red-600" : "text-gray-900"}>
               {timeLeft !== null ? formatTime(timeLeft) : '00:00'}
             </span>
           </div>
-          <Button variant="danger" onClick={() => setShowSubmitConfirm(true)}>
-            Submit Test
+          <button 
+            className="md:hidden p-2 bg-gray-100 rounded-lg text-gray-700 font-bold" 
+            onClick={() => setShowMobilePalette(!showMobilePalette)}
+          >
+            <LayoutGrid className="w-5 h-5" />
+          </button>
+          <Button variant="danger" size="sm" className="hidden md:flex" onClick={() => setShowSubmitConfirm(true)}>
+            Submit
           </Button>
         </div>
       </header>
@@ -361,55 +368,80 @@ export function ExamInterface() {
           </div>
 
           {/* Action Bar */}
-          <div className="bg-gray-50 border-t border-gray-200 p-4 flex flex-wrap gap-4 items-center justify-between shrink-0">
-            <div className="flex space-x-4">
-              <Button variant="outline" onClick={handleMarkForReview} className="bg-white">
-                <Flag className="w-4 h-4 mr-2" /> Mark for Review
-              </Button>
-              <Button variant="ghost" onClick={handleClearResponse}>
-                Clear Response
-              </Button>
+          <div className="bg-gray-50 border-t border-gray-200 p-3 md:p-4 shrink-0 pb-[env(safe-area-inset-bottom)]">
+            <div className="grid grid-cols-2 md:flex md:flex-wrap gap-2 md:gap-4 items-center justify-between">
+              <div className="col-span-2 flex justify-between md:space-x-4 md:contents">
+                <Button variant="outline" size="sm" onClick={handleMarkForReview} className="bg-white flex-1 md:flex-none justify-center">
+                  <Flag className="w-4 h-4 md:mr-2" /> <span className="hidden md:inline">Mark for Review</span>
+                </Button>
+                <Button variant="ghost" size="sm" onClick={handleClearResponse} className="flex-1 md:flex-none justify-center">
+                  Clear <span className="hidden md:inline">&nbsp;Response</span>
+                </Button>
+              </div>
+              <div className="col-span-2 flex justify-between gap-2 md:space-x-4 md:contents mt-2 md:mt-0">
+                <Button 
+                  variant="secondary" 
+                  className="flex-1 md:flex-none"
+                  onClick={() => jumpToQuestion(Math.max(0, currentIndex - 1))}
+                  disabled={currentIndex === 0}
+                >
+                  <ChevronLeft className="w-4 h-4 mr-1" /> Prev
+                </Button>
+                <Button onClick={handleSaveAndNext} className="flex-1 md:flex-none text-sm md:text-base">
+                  Save & Next <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              </div>
             </div>
-            <div className="flex space-x-4">
-              <Button 
-                variant="secondary" 
-                onClick={() => jumpToQuestion(Math.max(0, currentIndex - 1))}
-                disabled={currentIndex === 0}
-              >
-                <ChevronLeft className="w-4 h-4 mr-1" /> Previous
-              </Button>
-              <Button onClick={handleSaveAndNext}>
-                Save & Next <ChevronRight className="w-4 h-4 ml-1" />
+            
+            <div className="mt-4 md:hidden">
+              <Button variant="danger" className="w-full" onClick={() => setShowSubmitConfirm(true)}>
+                Submit Test
               </Button>
             </div>
           </div>
         </div>
 
-        {/* Right Panel: Palette */}
-        <div className="w-80 bg-white border-l border-gray-200 flex flex-col shrink-0 hidden md:flex">
-          <div className="p-4 border-b border-gray-100 bg-gray-50">
-            <div className="flex items-center space-x-3 mb-2">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-lg">
+        {/* Right Panel: Palette (Desktop) & Bottom Sheet (Mobile) */}
+        <div className={cn(
+          "bg-white border-l border-gray-200 flex flex-col shrink-0 z-30 transition-transform duration-300",
+          "md:w-80 md:relative md:translate-y-0 md:flex",
+          "fixed inset-x-0 bottom-0 top-[10%] rounded-t-2xl shadow-2xl md:shadow-none md:rounded-none",
+          showMobilePalette ? "translate-y-0" : "translate-y-full md:translate-y-0"
+        )}>
+          {/* Mobile Handle */}
+          <div className="md:hidden flex items-center justify-center pt-3 pb-1" onClick={() => setShowMobilePalette(false)}>
+            <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+          </div>
+          
+          <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm md:text-lg">
                 {user?.email?.[0].toUpperCase()}
               </div>
               <div>
-                <p className="text-sm font-bold text-gray-900">{user?.email}</p>
-                <p className="text-xs text-gray-500">Candidate</p>
+                <p className="text-xs md:text-sm font-bold text-gray-900 truncate max-w-[150px] md:max-w-full">{user?.email}</p>
+                <p className="text-[10px] md:text-xs text-gray-500">Candidate</p>
               </div>
             </div>
+            <button className="md:hidden p-2 text-gray-500 hover:text-gray-900" onClick={() => setShowMobilePalette(false)}>
+              <X className="w-5 h-5" />
+            </button>
           </div>
           
           <div className="flex-1 overflow-y-auto p-4">
             <h3 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wider">Question Palette</h3>
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-5 md:grid-cols-4 gap-2 md:gap-3">
               {questions.map((q, idx) => {
                 const ansStatus = answers[q.id]?.status || 'not_visited';
                 return (
                   <button
                     key={q.id}
-                    onClick={() => jumpToQuestion(idx)}
+                    onClick={() => {
+                      jumpToQuestion(idx);
+                      setShowMobilePalette(false);
+                    }}
                     className={cn(
-                      "h-12 w-12 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm transition-transform hover:scale-105",
+                      "aspect-square rounded-lg flex items-center justify-center font-bold text-sm shadow-sm transition-transform hover:scale-105",
                       getStatusColor(ansStatus),
                       currentIndex === idx && "ring-4 ring-blue-300 ring-offset-1"
                     )}

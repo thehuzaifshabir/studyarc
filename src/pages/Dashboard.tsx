@@ -24,17 +24,17 @@ export function Dashboard() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="flex overflow-x-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3 gap-4 md:gap-6 mb-8 snap-x">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.name} className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex items-center">
-              <div className={`p-3 rounded-lg ${stat.color} text-white mr-4`}>
+            <div key={stat.name} className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 flex items-center min-w-[240px] md:min-w-0 snap-start">
+              <div className={`p-3 rounded-lg ${stat.color} text-white mr-4 shrink-0`}>
                 <Icon className="h-6 w-6" />
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">{stat.name}</p>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-xl md:text-2xl font-bold text-gray-900">{stat.value}</p>
               </div>
             </div>
           );
