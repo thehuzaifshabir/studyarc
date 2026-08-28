@@ -9,7 +9,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="col-span-1 md:col-span-1">
             <Link to="/" className="flex items-center mb-4">
-              <BookOpen className="h-8 w-8 text-blue-500" />
+              <img src="/logo.png" alt="Study Arc Logo" className="h-10 w-10 object-contain drop-shadow-sm" />
               <span className="ml-2 text-xl font-bold text-white tracking-tight">Study Arc</span>
             </Link>
             <p className="text-sm text-gray-400 mb-6 leading-relaxed">
