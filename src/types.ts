@@ -126,6 +126,8 @@ export interface Announcement {
   id: string;
   title: string;
   content: string;
+  thumbnailUrl?: string;
+  linkUrl?: string;
   targetCategories?: string[];
   isPublished: boolean;
   createdAt: string;

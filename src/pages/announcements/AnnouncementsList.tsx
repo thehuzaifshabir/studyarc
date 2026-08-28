@@ -83,7 +83,11 @@ export function AnnouncementsList() {
           {announcements.map((ann) => (
             <div key={ann.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col">
               <div className="w-full h-48 bg-gray-100 flex items-center justify-center overflow-hidden relative">
-                <Bell className="w-12 h-12 text-gray-300" />
+                {ann.thumbnailUrl ? (
+                  <img src={ann.thumbnailUrl} alt={ann.title} className="w-full h-full object-cover" />
+                ) : (
+                  <Bell className="w-12 h-12 text-gray-300" />
+                )}
                 <span className="absolute top-4 right-4 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800 shadow-sm">
                   {new Date(ann.createdAt).toLocaleDateString()}
                 </span>
@@ -95,7 +99,13 @@ export function AnnouncementsList() {
                 <h3 className="text-xl font-bold text-gray-900 mb-2 leading-tight">{ann.title}</h3>
                 <p className="text-gray-600 text-sm mb-4 line-clamp-3">{ann.content}</p>
                 <div className="mt-auto pt-4 border-t border-gray-100">
-                   <Button variant="outline" className="w-full font-bold" onClick={() => alert(ann.content)}>Read Full Announcement</Button>
+                   {ann.linkUrl ? (
+                     <a href={ann.linkUrl} target="_blank" rel="noopener noreferrer" className="block w-full">
+                       <Button variant="outline" className="w-full font-bold">Open Link</Button>
+                     </a>
+                   ) : (
+                     <Button variant="outline" className="w-full font-bold" onClick={() => alert(ann.content)}>Read Full Announcement</Button>
+                   )}
                 </div>
               </div>
             </div>

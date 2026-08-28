@@ -23,6 +23,8 @@ export function AdminDashboard() {
   const [selectedCategoriesAnn, setSelectedCategoriesAnn] = useState<string[]>(['all']);
   const [annTitle, setAnnTitle] = useState('');
   const [annContent, setAnnContent] = useState('');
+  const [annThumbnail, setAnnThumbnail] = useState('');
+  const [annLink, setAnnLink] = useState('');
   const [isSubmittingAnn, setIsSubmittingAnn] = useState(false);
 
   // Notes State
@@ -135,6 +137,8 @@ export function AdminDashboard() {
       await addDoc(collection(db, 'announcements'), {
         title: annTitle,
         content: annContent,
+        thumbnailUrl: annThumbnail,
+        linkUrl: annLink,
         targetCategories: selectedCategoriesAnn,
         isPublished: true,
         createdAt: new Date().toISOString(),
@@ -143,6 +147,8 @@ export function AdminDashboard() {
       alert("Announcement created successfully");
       setAnnTitle('');
       setAnnContent('');
+      setAnnThumbnail('');
+      setAnnLink('');
       fetchAllContent();
     } catch (error) {
       console.error(error);
@@ -402,6 +408,27 @@ export function AdminDashboard() {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Thumbnail URL (Optional)</label>
+                <input 
+                  type="text" 
+                  value={annThumbnail}
+                  onChange={e => setAnnThumbnail(e.target.value)}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Link URL (Optional)</label>
+                <input 
+                  type="text" 
+                  value={annLink}
+                  onChange={e => setAnnLink(e.target.value)}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                />
+              </div>
+
               <div className="pt-2">
                 <TargetAudienceSelector 
                   selectedCategories={selectedCategoriesAnn} 
