@@ -5,6 +5,8 @@ import { db } from '../../lib/firebase';
 import { Announcement } from '../../types';
 import { ClassNavigationTabs } from '../../components/ClassNavigationTabs';
 import { ClassSelector } from '../../components/ClassSelector';
+import { Button } from '../../components/ui/Button';
+import { Bell } from 'lucide-react';
 
 export function AnnouncementsList() {
   const { classId } = useParams<{ classId: string }>();
@@ -77,16 +79,25 @@ export function AnnouncementsList() {
           <p className="mt-1 text-gray-500">There are no announcements for this class right now.</p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
           {announcements.map((ann) => (
-            <div key={ann.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="flex justify-between items-start">
-                <h3 className="text-xl font-bold text-gray-900">{ann.title}</h3>
-                <span className="text-sm text-gray-500">
+            <div key={ann.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col">
+              <div className="w-full h-48 bg-gray-100 flex items-center justify-center overflow-hidden relative">
+                <Bell className="w-12 h-12 text-gray-300" />
+                <span className="absolute top-4 right-4 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800 shadow-sm">
                   {new Date(ann.createdAt).toLocaleDateString()}
                 </span>
               </div>
-              <p className="mt-4 text-gray-700 whitespace-pre-wrap">{ann.content}</p>
+              <div className="p-5 flex-grow flex flex-col">
+                <span className="inline-block text-xs font-semibold text-purple-600 uppercase tracking-wider mb-2">
+                  Announcement
+                </span>
+                <h3 className="text-xl font-bold text-gray-900 mb-2 leading-tight">{ann.title}</h3>
+                <p className="text-gray-600 text-sm mb-4 line-clamp-3">{ann.content}</p>
+                <div className="mt-auto pt-4 border-t border-gray-100">
+                   <Button variant="outline" className="w-full font-bold" onClick={() => alert(ann.content)}>Read Full Announcement</Button>
+                </div>
+              </div>
             </div>
           ))}
         </div>
