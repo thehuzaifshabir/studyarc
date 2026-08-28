@@ -40,6 +40,7 @@ export interface MockTest {
   class?: string;
   targetCategories?: string[];
   isFeaturedPremium?: boolean;
+  isComingSoon?: boolean;
   durationMinutes: number;
   totalMarks?: number;
   negativeMarking?: number;

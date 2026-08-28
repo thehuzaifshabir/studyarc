@@ -1,56 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { AppProduct } from '../../types';
 import { Button } from '../../components/ui/Button';
-import { LayoutGrid, Download, Star } from 'lucide-react';
-import { ClassNavigationTabs } from '../../components/ClassNavigationTabs';
-import { ClassSelector } from '../../components/ClassSelector';
+import { LayoutGrid } from 'lucide-react';
 
 export function AppList() {
-  const { classId } = useParams<{ classId: string }>();
   const [apps, setApps] = useState<AppProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchApps() {
-      if (!classId) return;
       try {
         const q = query(
           collection(db, 'apps'), 
-          where('isPublished', '==', true),
-          where('targetCategories', 'array-contains', classId)
+          where('isPublished', '==', true)
         );
         const querySnapshot = await getDocs(q);
         const fetched = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         })) as AppProduct[];
-
-        const qAll = query(
-          collection(db, 'apps'),
-          where('isPublished', '==', true),
-          where('targetCategories', 'array-contains', 'all')
-        );
-        const snapshotAll = await getDocs(qAll);
-        const allFetched = snapshotAll.docs.map(doc => ({ id: doc.id, ...doc.data() } as AppProduct));
-
-        const merged = [...fetched, ...allFetched];
-        const unique = Array.from(new Map(merged.map(item => [item.id, item])).values());
-
-        setApps(unique);
+        setApps(fetched);
       } catch (error) {
         console.error("Error fetching apps:", error);
       } finally {
         setIsLoading(false);
       }
     }
-
     fetchApps();
-  }, [classId]);
-
-  if (!classId) return null;
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -59,12 +38,7 @@ export function AppList() {
           <h1 className="text-3xl font-bold text-gray-900">Study Apps & Tools</h1>
           <p className="mt-1 text-gray-500">Boost your productivity with our custom tools.</p>
         </div>
-        <div className="mt-4 sm:mt-0">
-          <ClassSelector currentClassId={classId} category="study-apps" />
-        </div>
       </div>
-
-      <ClassNavigationTabs currentClassId={classId} />
 
       {isLoading ? (
         <div className="text-center py-12">

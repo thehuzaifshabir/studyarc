@@ -57,6 +57,7 @@ export function AdminDashboard() {
   // Featured Test State
   const [mockTests, setMockTests] = useState<MockTest[]>([]);
   const [featuredTestId, setFeaturedTestId] = useState('');
+  const [featuredComingSoon, setFeaturedComingSoon] = useState(false);
   const [isUpdatingFeatured, setIsUpdatingFeatured] = useState(false);
 
   const fetchAllContent = async () => {
@@ -71,7 +72,10 @@ export function AdminDashboard() {
       const tests = testsSnap.docs.map(d => ({ id: d.id, ...d.data() } as MockTest));
       setMockTests(tests);
       const featured = tests.find(t => t.isFeaturedPremium);
-      if (featured) setFeaturedTestId(featured.id);
+      if (featured) {
+        setFeaturedTestId(featured.id);
+        setFeaturedComingSoon(!!featured.isComingSoon);
+      }
       
       setAnnouncementsList(annSnap.docs.map(d => ({ id: d.id, ...d.data() } as Announcement)));
       setNotesList(notesSnap.docs.map(d => ({ id: d.id, ...d.data() } as StudyMaterial)));
@@ -304,14 +308,16 @@ export function AdminDashboard() {
       const prevFeatured = mockTests.find(t => t.isFeaturedPremium);
       if (prevFeatured) {
         await updateDoc(doc(db, 'mockTests', prevFeatured.id), {
-          isFeaturedPremium: false
+          isFeaturedPremium: false,
+          isComingSoon: false
         });
       }
       
       // Set new featured
       if (featuredTestId) {
         await updateDoc(doc(db, 'mockTests', featuredTestId), {
-          isFeaturedPremium: true
+          isFeaturedPremium: true,
+          isComingSoon: featuredComingSoon
         });
         alert("Featured test updated successfully");
       }
@@ -793,6 +799,20 @@ export function AdminDashboard() {
                   This test will be prominently displayed on the homepage. Only one test can be featured at a time.
                 </p>
               </div>
+              
+              <div className="flex items-center">
+                <input
+                  id="featured-coming-soon"
+                  type="checkbox"
+                  checked={featuredComingSoon}
+                  onChange={(e) => setFeaturedComingSoon(e.target.checked)}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <label htmlFor="featured-coming-soon" className="ml-2 block text-sm text-gray-900">
+                  Mark as "Coming Soon"
+                </label>
+              </div>
+
               <Button onClick={handleUpdateFeaturedTest} isLoading={isUpdatingFeatured}>Update Featured Test</Button>
             </div>
           </div>

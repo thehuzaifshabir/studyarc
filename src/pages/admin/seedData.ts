@@ -61,6 +61,7 @@ export async function runClientSeed() {
       maxAttempts: 2,
       isPublished: true,
       isFeaturedPremium: true,
+      isComingSoon: true,
       targetCategories: ['12th-jee', 'jee-dropper'],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

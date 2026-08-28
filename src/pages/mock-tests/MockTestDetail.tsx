@@ -121,6 +121,20 @@ export function MockTestDetail() {
   if (isLoading) return <div className="p-12 text-center">Loading...</div>;
   if (!test) return <div className="p-12 text-center">Test not found.</div>;
 
+  if (test.isComingSoon) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+         <div className="bg-yellow-50 rounded-2xl p-12 border border-yellow-200 shadow-sm">
+             <h1 className="text-4xl font-extrabold text-yellow-800 mb-4">Coming Soon!</h1>
+             <p className="text-lg text-yellow-700">This premium test is currently being prepared and will be available soon.</p>
+             <Link to="/">
+               <Button className="mt-8 bg-yellow-600 hover:bg-yellow-700">Return Home</Button>
+             </Link>
+         </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">

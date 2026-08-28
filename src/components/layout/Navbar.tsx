@@ -21,7 +21,7 @@ export function Navbar() {
   const navLinks = [
     { name: 'Notes', path: '/notes/select' },
     { name: 'Mock Tests', path: '/mock-tests/select' },
-    { name: 'Apps', path: '/study-apps/select' },
+    { name: 'Apps', path: '/study-apps' },
     { name: 'Donate', path: '/donate' },
   ];
 

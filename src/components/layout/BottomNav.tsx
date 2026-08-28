@@ -11,7 +11,7 @@ export function BottomNav() {
     { name: 'Home', path: '/', icon: Home },
     { name: 'Notes', path: '/notes/select', icon: BookOpen },
     { name: 'Tests', path: '/mock-tests/select', icon: ClipboardList },
-    { name: 'Apps', path: '/study-apps/select', icon: LayoutGrid },
+    { name: 'Apps', path: '/study-apps', icon: LayoutGrid },
     { name: 'Profile', path: user ? '/dashboard' : '/login', icon: User },
   ];
 

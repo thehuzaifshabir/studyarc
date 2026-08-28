@@ -62,7 +62,7 @@ export function Home() {
             {CONTENT_CATEGORIES.map(category => (
               <Link
                 key={category.id}
-                to={`${category.path}/select`}
+                to={category.id === 'study-apps' ? category.path : `${category.path}/select`}
                 className="group flex flex-col bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-300 transition-all text-center h-full"
               >
                 <div className="mx-auto w-12 h-12 md:w-16 md:h-16 bg-gray-50 rounded-xl md:rounded-2xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 transition-transform">
@@ -92,7 +92,16 @@ export function Home() {
             <div className="bg-gradient-to-br from-gray-900 to-indigo-900 rounded-3xl overflow-hidden shadow-2xl relative">
               <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-blue-500 opacity-20 blur-3xl"></div>
               
-              <div className="relative z-10 p-6 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
+              {featuredTest.isComingSoon && (
+                <div className="absolute inset-0 z-20 bg-gray-900/70 backdrop-blur-sm flex flex-col items-center justify-center rounded-3xl">
+                  <div className="bg-yellow-500 text-gray-900 px-8 py-4 rounded-2xl shadow-2xl transform -rotate-3 border-4 border-yellow-400">
+                    <p className="text-3xl md:text-4xl font-extrabold uppercase tracking-wider">Coming Soon!</p>
+                  </div>
+                  <p className="mt-4 text-white font-medium text-lg z-20">This premium content is currently being prepared.</p>
+                </div>
+              )}
+
+              <div className={cn("relative z-10 p-6 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8", featuredTest.isComingSoon && "pointer-events-none opacity-50")}>
                 <div className="flex-1 text-center md:text-left">
                   <div className="inline-flex items-center px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-300 text-xs md:text-sm font-semibold mb-4 md:mb-6 border border-yellow-500/30">
                     Premium Test Series
