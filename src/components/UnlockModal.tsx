@@ -42,7 +42,7 @@ export function UnlockModal({ isOpen, onClose, onConfirm }: UnlockModalProps) {
             <iframe 
               width="100%" 
               height="100%" 
-              src="https://www.youtube.com/embed/3z8SgMyinLo?si=dKtp6MeqfvT_hCaS" 
+              src="https://www.youtube.com/embed/80kGH1AJDao?si=evjd9s99NkIB0IDc" 
               title="YouTube video player" 
               frameBorder="0" 
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
@@ -75,7 +75,7 @@ export function UnlockModal({ isOpen, onClose, onConfirm }: UnlockModalProps) {
             </button>
 
             <button 
-              onClick={() => window.open('https://youtu.be/3z8SgMyinLo?si=dKtp6MeqfvT_hCaS', '_blank')}
+              onClick={() => window.open('https://youtu.be/80kGH1AJDao?si=evjd9s99NkIB0IDc', '_blank')}
               className="w-full bg-[#2a2d42] hover:bg-[#343851] text-gray-300 font-medium py-3 px-4 rounded-xl border border-gray-700 transition-colors flex items-center justify-center space-x-2 text-sm"
             >
               <HelpCircle className="w-4 h-4 text-[#ff4d4f]" />
