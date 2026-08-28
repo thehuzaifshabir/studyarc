@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { StudyMaterial } from '../../types';
@@ -7,12 +7,16 @@ import { Button } from '../../components/ui/Button';
 import { BookOpen, FileText, Lock, Unlock, Download } from 'lucide-react';
 import { ClassNavigationTabs } from '../../components/ClassNavigationTabs';
 import { ClassSelector } from '../../components/ClassSelector';
+import { UnlockModal } from '../../components/UnlockModal';
 
 export function MaterialList() {
   const { classId } = useParams<{ classId: string }>();
+  const navigate = useNavigate();
   const [materials, setMaterials] = useState<StudyMaterial[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState('All');
+  
+  const [unlockModalConfig, setUnlockModalConfig] = useState<{isOpen: boolean, action: () => void} | null>(null);
 
   useEffect(() => {
     async function fetchMaterials() {
@@ -106,6 +110,7 @@ export function MaterialList() {
                 ) : (
                   <FileText className="w-12 h-12 text-gray-300" />
                 )}
+      <UnlockModal isOpen={!!unlockModalConfig?.isOpen} onClose={() => setUnlockModalConfig(null)} onConfirm={() => { if(unlockModalConfig?.action) unlockModalConfig.action(); }} />
                 {material.isFree ? (
                   <span className="absolute top-4 right-4 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-500 text-white shadow-sm">
                     <Unlock className="w-3 h-3 mr-1" /> Free
@@ -115,6 +120,7 @@ export function MaterialList() {
                     <Lock className="w-3 h-3 mr-1" /> ₹{material.price}
                   </span>
                 )}
+      <UnlockModal isOpen={!!unlockModalConfig?.isOpen} onClose={() => setUnlockModalConfig(null)} onConfirm={() => { if(unlockModalConfig?.action) unlockModalConfig.action(); }} />
               </div>
               <div className="p-5 flex-grow flex flex-col">
                 <span className="inline-block text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2">
@@ -122,29 +128,40 @@ export function MaterialList() {
                 </span>
                 <h3 className="text-xl font-bold text-gray-900 mb-2 leading-tight">{material.title}</h3>
                 <p className="text-gray-600 text-sm mb-4 line-clamp-2">{material.description}</p>
-                
                 <div className="mt-auto pt-4 border-t border-gray-100">
                   {material.isFree ? (
-                     material.contentUrl ? (
-                       <a href={material.contentUrl} target="_blank" rel="noopener noreferrer" className="block w-full">
-                         <Button className="w-full font-bold">Get for Free</Button>
-                       </a>
-                     ) : (
-                       <Link to={`/study-material/${material.id}`} className="block w-full">
-                         <Button className="w-full font-bold">Get for Free</Button>
-                       </Link>
-                     )
+                     <Button 
+                       className="w-full font-bold" 
+                       onClick={(e) => {
+                         e.preventDefault();
+                         setUnlockModalConfig({
+                           isOpen: true,
+                           action: () => {
+                             if (material.contentUrl) {
+                               window.open(material.contentUrl, "_blank");
+                             } else {
+                               navigate(`/study-material/${material.id}`);
+                             }
+                             setUnlockModalConfig(null);
+                           }
+                         });
+                       }}
+                     >
+                       Get for Free
+                     </Button>
                   ) : (
                      <Link to={`/study-material/${material.id}`} className="block w-full">
                        <Button variant="outline" className="w-full font-bold">View Details (₹{material.price})</Button>
                      </Link>
                   )}
+      <UnlockModal isOpen={!!unlockModalConfig?.isOpen} onClose={() => setUnlockModalConfig(null)} onConfirm={() => { if(unlockModalConfig?.action) unlockModalConfig.action(); }} />
                 </div>
               </div>
             </div>
           ))}
         </div>
       )}
+      <UnlockModal isOpen={!!unlockModalConfig?.isOpen} onClose={() => setUnlockModalConfig(null)} onConfirm={() => { if(unlockModalConfig?.action) unlockModalConfig.action(); }} />
     </div>
   );
 }

@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { AppProduct } from '../../types';
+import { UnlockModal } from "../../components/UnlockModal";
 import { Button } from '../../components/ui/Button';
 import { LayoutGrid } from 'lucide-react';
 
 export function AppList() {
   const [apps, setApps] = useState<AppProduct[]>([]);
+  const [unlockModalConfig, setUnlockModalConfig] = useState<{isOpen: boolean, action: () => void} | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -39,7 +41,7 @@ export function AppList() {
           <p className="mt-1 text-gray-500">Boost your productivity with our custom tools.</p>
         </div>
       </div>
-
+      
       {isLoading ? (
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
@@ -60,6 +62,7 @@ export function AppList() {
                 ) : (
                   <LayoutGrid className="w-12 h-12 text-gray-300" />
                 )}
+                
                 {app.isFree ? (
                   <span className="absolute top-4 right-4 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-500 text-white shadow-sm">
                     Free
@@ -79,13 +82,25 @@ export function AppList() {
                 
                 <div className="mt-auto pt-4 border-t border-gray-100">
                   {app.isFree ? (
-                     app.downloadUrl ? (
-                       <a href={app.downloadUrl} target="_blank" rel="noopener noreferrer" className="block w-full">
-                         <Button className="w-full font-bold">Get for Free</Button>
-                       </a>
-                     ) : (
-                       <Button className="w-full font-bold" onClick={() => alert("Link not provided")}>Get for Free</Button>
-                     )
+                     <Button 
+                       className="w-full font-bold" 
+                       onClick={(e) => {
+                         e.preventDefault();
+                         setUnlockModalConfig({
+                           isOpen: true,
+                           action: () => {
+                             if (app.downloadUrl) {
+                               window.open(app.downloadUrl, "_blank");
+                             } else {
+                               alert("Link not provided");
+                             }
+                             setUnlockModalConfig(null);
+                           }
+                         });
+                       }}
+                     >
+                       Get for Free
+                     </Button>
                   ) : (
                      <Button variant="outline" className="w-full font-bold">Buy App (₹{app.price})</Button>
                   )}
@@ -95,6 +110,7 @@ export function AppList() {
           ))}
         </div>
       )}
+      <UnlockModal isOpen={!!unlockModalConfig?.isOpen} onClose={() => setUnlockModalConfig(null)} onConfirm={() => { if(unlockModalConfig?.action) unlockModalConfig.action(); }} />
     </div>
   );
 }
